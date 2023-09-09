@@ -8,7 +8,7 @@ import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
 import gsap from 'gsap';
 import { randFloat } from 'three/src/math/MathUtils';
 
-let fullOrbitControl = true;
+let fullOrbitControl = false;
 
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
@@ -415,6 +415,7 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('click', onMouseClick);
+window.addEventListener('ontouchstart', onMouseClick);
 window.addEventListener('mousemove', onMouseMove);
 
 
