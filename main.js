@@ -6,9 +6,12 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { TGALoader } from 'three/addons/loaders/TGALoader.js';
 import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
 import gsap from 'gsap';
+import { randFloat } from 'three/src/math/MathUtils';
 
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
+let fullOrbitControl = true;
+
+let raycaster = new THREE.Raycaster();
+let mouse = new THREE.Vector2();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x010101);
@@ -24,11 +27,13 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const controls = new OrbitControls( camera, renderer.domElement );
-controls.minPolarAngle = Math.PI * .1;
-controls.maxPolarAngle = Math.PI * .55;
-controls.maxDistance = 100;
-controls.minDistance = 40;
-controls.enablePan = false;
+if(!fullOrbitControl){
+  controls.minPolarAngle = Math.PI * .1;
+  controls.maxPolarAngle = Math.PI * .55;
+  controls.maxDistance = 100;
+  controls.minDistance = 40;
+  controls.enablePan = false;
+}
 controls.update();
 
 
@@ -66,7 +71,7 @@ const pointLight4 = new THREE.PointLight(0xffffff,150,0,2);
 pointLight4.position.set(18,-5,20);
 
 const rearpointLight = new THREE.PointLight(0xffffff,550,0,2);
-rearpointLight.position.set(0,-5,-120);
+rearpointLight.position.set(0,15,-120);
 
 const farRightPointLight = new THREE.PointLight(0xffffff,300,0,2.1);
 farRightPointLight.position.set(100,0,0);
@@ -184,8 +189,8 @@ scene.add(leftsphere, rightsphere, floor, rearWall, leftWall, rightWall, cortina
 //Load in FBX models
 let cortina;
 let windowMaterial;
-const fbxLoader2 = new FBXLoader(loadingManager);
-fbxLoader2.load('./models/cortina/CortinaHIGHPOLY4threejs.fbx', (fbxScene) => {
+const fbxLoader = new FBXLoader(loadingManager);
+fbxLoader.load('./models/cortina/CortinaHIGHPOLY4threejs.fbx', (fbxScene) => {
   fbxScene.name = "cortina";
   fbxScene.children[0].name = "cortina";
   fbxScene.scale.set(2,2,2);
@@ -218,11 +223,9 @@ fbxLoader2.load('./models/cortina/CortinaHIGHPOLY4threejs.fbx', (fbxScene) => {
   // windowMaterial.envMapIntensity = .05;
   cortina = fbxScene;
   scene.add(fbxScene);
-  console.log(fbxScene.children);
 });
 
 var f100;
-const fbxLoader = new FBXLoader(loadingManager);
 fbxLoader.load('./models/F100HighPolyRigForGame.fbx', (fbxScene) => {
   fbxScene.name = "f100";
   fbxScene.scale.set(3.4,3.4,3.4);
@@ -262,9 +265,50 @@ fbxLoader.load('./models/F100HighPolyRigForGame.fbx', (fbxScene) => {
 
   scene.add(fbxScene);
   f100 = fbxScene;
-  console.log(fbxScene.children);
 });
 
+let barrels = [];
+fbxLoader.load('./models/SM_Barrel.FBX', (fbxScene) => {
+  fbxScene.scale.set(.17,.17,.17);
+  fbxScene.position.set(0,-20,0);
+  fbxScene.rotateX(Math.PI / -2);
+  fbxScene.traverse(function(child){
+    if(child.isMesh){
+      child.castShadow = true;
+    }
+  });
+  // Randomly place on both sides of the scene
+  let barrel = fbxScene;
+  const numBarrels = 5;
+  for(let i=0; i<numBarrels; i++){
+    let tempBarrel = barrel.clone();
+    tempBarrel.position.set(99 - randFloat(-5,5), -20, -90 + (i*20) + randFloat(-5,5));
+    barrels.push(tempBarrel);
+    scene.add(tempBarrel);
+  }
+  for(let i=0; i<numBarrels; i++){
+    let tempBarrel = barrel.clone();
+    tempBarrel.position.set(-99 + randFloat(-5,5), -20, -90 + (i*20) + randFloat(-5,5));
+    barrels.push(tempBarrel);
+    scene.add(tempBarrel);
+  }
+  console.log(fbxScene);
+});
+
+fbxLoader.load('./models/SM_Table_1.FBX', (fbxScene) => {
+  fbxScene.scale.set(.17,.37,.17);
+  fbxScene.position.set(0,-20,-115);
+  fbxScene.rotateX(Math.PI / -2);
+  fbxScene.rotateZ(Math.PI / 2);
+  fbxScene.traverse(function(child){
+    if(child.isMesh){
+      child.castShadow = true;
+      child.material.color.setRGB(250,250,250);//(150,75,0);
+    }
+  });
+  scene.add(fbxScene);
+
+});
 
 // Events
 function onMouseClick(event){
