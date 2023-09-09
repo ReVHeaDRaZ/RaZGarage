@@ -1,5 +1,10 @@
+@font-face {
+  font-family: "Lobster";
+  src: url("./Lobster-Regular.ttf");
+}
+
 :root {
-  font-family: Impact, Helvetica, Arial, sans-serif;
+  font-family: 'Lobster', Impact, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -71,20 +76,30 @@ h1 {
   padding: 10px;
   font-size: 3em;
   line-height: 1.1;
+  letter-spacing: .001em;
   opacity: .5;
 }
 
+.loadingHeading{
+  color: aqua;
+  font-size: 5em;
+  line-height: 1.1;
+  letter-spacing: .001em;
+  opacity: 1;
+}
+
 .card {
-  padding: 2em;
+  padding: 1em;
 }
 
 button {
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 0.5em 1em;
+  padding: 0.4em .5em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
+  letter-spacing: 0.05em;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   color: black;
   background-color: #1a1a1a;
   opacity: .5;

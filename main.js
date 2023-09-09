@@ -12,13 +12,16 @@ let fullOrbitControl = true;
 
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
+let lightMaterials = [];
+let lights = [];
+let leftLamp, rightLamp, rearLamp;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x010101);
 scene.fog = new THREE.Fog(0xe0e0e0, 0.5, 1000);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.setZ(75);
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.setZ(85);
 
 const renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#bg')});
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -48,9 +51,21 @@ loadingManager.onProgress = function (url, loaded, total){
   progressBar.value = (loaded / total) * 100;
 };
 
+// After Loading Finished (Initialise)
 const progressBarContainer = document.querySelector(".progress-bar-container");
 loadingManager.onLoad = function(){
   progressBarContainer.style.display = 'none';
+  
+  document.querySelector('#app').innerHTML = `
+    <div class="appContainer">
+      <h1 id="heading">RaZ Garage</h1>
+      <div class="card">
+        <button id="colorButton" type="button"></button>
+      </div>
+
+    </div>
+  `
+  setupColorButton(document.querySelector('#colorButton'), lightMaterials, lights);
   animate();
 };
 
@@ -71,13 +86,16 @@ const pointLight4 = new THREE.PointLight(0xffffff,150,0,2);
 pointLight4.position.set(18,-5,20);
 
 const rearpointLight = new THREE.PointLight(0xffffff,550,0,2);
-rearpointLight.position.set(0,15,-120);
+rearpointLight.position.set(0,15,-119);
+rearpointLight.castShadow = true;
 
 const farRightPointLight = new THREE.PointLight(0xffffff,300,0,2.1);
-farRightPointLight.position.set(100,0,0);
+farRightPointLight.position.set(98,0,0);
+farRightPointLight.castShadow = true;
 
 const farLeftPointLight = new THREE.PointLight(0xffffff,300,0,2.1);
-farLeftPointLight.position.set(-100,0,0);
+farLeftPointLight.position.set(-98,0,0);
+farLeftPointLight.castShadow = true;
 
 const pointLightMouse = new THREE.PointLight(0xffffff,100,0,2.5);
 pointLightMouse.position.set(0,-5,25);
@@ -85,6 +103,7 @@ pointLightMouse.castShadow = true;
 
 const ambientLight = new THREE.AmbientLight(0xffffff,0.01);
 
+lights.push(leftpointLight, rightpointLight, farLeftPointLight, farRightPointLight, rearpointLight);
 scene.add(leftpointLight, rightpointLight, pointLight3, pointLight4, rearpointLight, pointLightMouse, ambientLight, farRightPointLight, farLeftPointLight);
 //const lightHelp = new THREE.PointLightHelper(farRightPointLight);
 //scene.add(lightHelp);
@@ -110,6 +129,7 @@ let f100Color = 0xFF0000;
 const leftSphereMaterial = new THREE.MeshStandardMaterial({ name: "lightSphere", color: 0xffffff, emissive: 0x000000, roughness: 0.1, metalness: .9, fog: true });
 const rightSphereMaterial = new THREE.MeshStandardMaterial({ name: "lightSphere", color: 0xffffff, emissive: 0x000000, roughness: 0.1, metalness: .9, fog: true });
 
+const lightGlowMaterial = new THREE.MeshStandardMaterial({ name: "lightGlow", color: 0xffffff, emissive: 0xffffff, roughness: 0.1, metalness: .9, fog: true });
 const f100PaintMaterial = new THREE.MeshStandardMaterial({ name: "f100Paint", color: f100Color, emissive: 0x000000, roughness: 0.1, metalness: .7, fog: true });
 const cortinaPaintMaterial = new THREE.MeshStandardMaterial({ name: "cortinaPaint", color: cortinaColor, emissive: 0x000000, roughness: 0.1, metalness: .7, fog: true });
 const metalBumperMaterial = new THREE.MeshStandardMaterial({ name: "metalBumperMaterial", color: 0xeeeeee, emissive: 0x000000, roughness: 0.1, metalness: .8, fog: true });
@@ -136,10 +156,11 @@ const decalMaterial = new THREE.MeshPhongMaterial( {
   depthTest: true,
   depthWrite: false,
   polygonOffset: true,
-  polygonOffsetFactor: - 4,
+  polygonOffsetFactor: - 8,
   wireframe: false
 } );
 
+lightMaterials.push(leftSphereMaterial, rightSphereMaterial);
 
 // Setup Meshes
 const sphereGeometry = new THREE.SphereGeometry (4);
@@ -267,7 +288,7 @@ fbxLoader.load('./models/F100HighPolyRigForGame.fbx', (fbxScene) => {
   f100 = fbxScene;
 });
 
-let barrels = [];
+
 fbxLoader.load('./models/SM_Barrel.FBX', (fbxScene) => {
   fbxScene.scale.set(.17,.17,.17);
   fbxScene.position.set(0,-20,0);
@@ -283,21 +304,18 @@ fbxLoader.load('./models/SM_Barrel.FBX', (fbxScene) => {
   for(let i=0; i<numBarrels; i++){
     let tempBarrel = barrel.clone();
     tempBarrel.position.set(99 - randFloat(-5,5), -20, -90 + (i*20) + randFloat(-5,5));
-    barrels.push(tempBarrel);
     scene.add(tempBarrel);
   }
   for(let i=0; i<numBarrels; i++){
     let tempBarrel = barrel.clone();
     tempBarrel.position.set(-99 + randFloat(-5,5), -20, -90 + (i*20) + randFloat(-5,5));
-    barrels.push(tempBarrel);
     scene.add(tempBarrel);
   }
-  console.log(fbxScene);
 });
 
 fbxLoader.load('./models/SM_Table_1.FBX', (fbxScene) => {
   fbxScene.scale.set(.17,.37,.17);
-  fbxScene.position.set(0,-20,-115);
+  fbxScene.position.set(50,-20,-115);
   fbxScene.rotateX(Math.PI / -2);
   fbxScene.rotateZ(Math.PI / 2);
   fbxScene.traverse(function(child){
@@ -306,8 +324,36 @@ fbxLoader.load('./models/SM_Table_1.FBX', (fbxScene) => {
       child.material.color.setRGB(250,250,250);//(150,75,0);
     }
   });
-  scene.add(fbxScene);
+  let table = fbxScene.clone();
+  table.position.set(-50,-20,-115);
+  scene.add(fbxScene, table);
+});
 
+fbxLoader.load('./models/SM_Lamp_1.FBX', (fbxScene) => {
+  fbxScene.scale.set(.17,.17,.17);  
+  fbxScene.children[0].material[0] = metalBumperMaterial;
+  fbxScene.children[0].material[1] = lightGlowMaterial;
+  fbxScene.children[0].name = "leftLamp";  
+  
+  leftLamp = fbxScene;
+  rightLamp = fbxScene.clone();
+  rearLamp = fbxScene.clone();
+
+  leftLamp.position.set(-110,0,0);
+  leftLamp.rotateZ(Math.PI / 2);
+  
+  rightLamp.children[0].name = "rightLamp";
+  rightLamp.position.set(110,0,0);
+  rightLamp.rotateZ(Math.PI / -2);
+    
+  rearLamp.children[0].name = "rearLamp";
+  rearLamp.position.set(0,15,-126);
+  rearLamp.rotateY(Math.PI / -2);
+  rearLamp.rotateZ(Math.PI / 2);
+  
+  lightMaterials.push(leftLamp.children[0].material[1], rightLamp.children[0].material[1], rearLamp.children[0].material[1]);
+
+  scene.add(leftLamp, rightLamp, rearLamp);
 });
 
 // Events
@@ -320,13 +366,22 @@ function onMouseClick(event){
   raycaster.setFromCamera(mouse, camera);
 
   var intersects = raycaster.intersectObjects(scene.children);
-
+  
   for (let i=0; i < intersects.length; i++){    
     if(intersects[i].object.name == "leftsphere"){
-      randomSceneLightColor(intersects[i].object, leftpointLight);
+      randomSceneLightColor(intersects[i].object.material, leftpointLight);
     }
     else if(intersects[i].object.name == "rightsphere"){
-      randomSceneLightColor(intersects[i].object, rightpointLight);
+      randomSceneLightColor(intersects[i].object.material, rightpointLight);
+    }
+    else if(intersects[i].object.name == "leftLamp"){
+      randomSceneLightColor(intersects[i].object.material[1], farLeftPointLight);
+    }
+    else if(intersects[i].object.name == "rightLamp"){
+      randomSceneLightColor(intersects[i].object.material[1], farRightPointLight);
+    }
+    else if(intersects[i].object.name == "rearLamp"){
+      randomSceneLightColor(intersects[i].object.material[1], rearpointLight);
     }
     else if(intersects[i].object.name == "f100"){
       randomMaterialColor(f100PaintMaterial);
@@ -370,15 +425,3 @@ function animate(){
   renderer.render(scene,camera);
   controls.update();
 }
-
-
-document.querySelector('#app').innerHTML = `
-  <div class="appContainer">
-    <h1 id="heading">RaZ Garage</h1>
-    <div class="card">
-      <button id="colorButton" type="button"></button>
-    </div>
-
-  </div>
-`
-setupColorButton(document.querySelector('#colorButton'), leftsphere, rightsphere, leftpointLight, rightpointLight);
