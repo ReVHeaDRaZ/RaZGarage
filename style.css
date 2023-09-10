@@ -168,3 +168,8 @@ button:focus-visible {
     font-size: 10px;
   }
 }
+@media(max-height: 570px) {
+  :root {
+    font-size: 10px;
+  }
+}
