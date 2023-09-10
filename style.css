@@ -7,7 +7,7 @@
   font-family: 'Lobster', Impact, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
+  font-size: 15px;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #222222;
@@ -32,15 +32,24 @@ body {
 .progress-bar-container{
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
   justify-content: center;
   align-items: center;
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
+  
   width: 100vw;
-  height: 100vw;
+  height: 100vh;
   z-index: 10;
+}
+.loadingHeading{
+  align-self: center;
+  color: aqua;
+  font-size: 5rem;
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: .001em;
+  opacity: 1;
 }
 #progress-bar{
   width: 40%;
@@ -51,6 +60,7 @@ label{
   color: white;
   font-size: 2rem;  
 }
+
 canvas {
   position: fixed;
   top: 0px;
@@ -80,20 +90,12 @@ canvas {
 h1 {
   margin: 10px;
   padding: 10px;
-  font-size: 3em;
+  font-size: 3rem;
   line-height: 1.1;
   letter-spacing: .001em;
   opacity: .5;
   align-self: flex-start;
   user-select: none;
-}
-
-.loadingHeading{
-  color: aqua;
-  font-size: 5em;
-  line-height: 1.1;
-  letter-spacing: .001em;
-  opacity: 1;
 }
 
 .card {
@@ -112,12 +114,12 @@ button {
   margin-right: 30px;
   margin-bottom: 10px;
   padding: 0.4em .5em;
-  font-size: 1em;
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.05em;
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   color: black;
-  background-color: #1a1a1a;
+  background-color: #8d8d8d;
   opacity: .5;
   cursor: pointer;
   will-change: border-color filter;
@@ -161,3 +163,8 @@ button:focus-visible {
   }
 }
 
+@media(max-width: 770px) {
+  :root {
+    font-size: 10px;
+  }
+}
