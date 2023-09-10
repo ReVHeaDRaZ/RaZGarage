@@ -1,6 +1,6 @@
 export function setupColorButton(element, lightMaterials = [], lights = []) {
   const setColor = () => {
-    element.innerHTML = `Change All Lights`;
+    element.innerHTML = `CHANGE ALL LIGHTS`;
 
     var r = Math.random() * 255;
     var g = Math.random() * 255;

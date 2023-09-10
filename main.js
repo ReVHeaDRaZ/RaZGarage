@@ -133,6 +133,7 @@ const lightGlowMaterial = new THREE.MeshStandardMaterial({ name: "lightGlow", co
 const f100PaintMaterial = new THREE.MeshStandardMaterial({ name: "f100Paint", color: f100Color, emissive: 0x000000, roughness: 0.1, metalness: .7, fog: true });
 const cortinaPaintMaterial = new THREE.MeshStandardMaterial({ name: "cortinaPaint", color: cortinaColor, emissive: 0x000000, roughness: 0.1, metalness: .7, fog: true });
 const metalBumperMaterial = new THREE.MeshStandardMaterial({ name: "metalBumperMaterial", color: 0xeeeeee, emissive: 0x000000, roughness: 0.1, metalness: .8, fog: true });
+let windowMaterial = new THREE.MeshPhongMaterial();
 
 const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x55555 });
 const wallTexture = textureLoader.load ("./textures/castle_brick_02_red_diff.jpg");
@@ -209,7 +210,6 @@ scene.add(leftsphere, rightsphere, floor, rearWall, leftWall, rightWall, cortina
 
 //Load in FBX models
 let cortina;
-let windowMaterial;
 const fbxLoader = new FBXLoader(loadingManager);
 fbxLoader.load('./models/cortina/CortinaHIGHPOLY4threejs.fbx', (fbxScene) => {
   fbxScene.name = "cortina";
