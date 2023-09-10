@@ -1,5 +1,5 @@
 import './style.css';
-import { setupColorButton, randomSceneLightColor, randomMaterialColor } from './colorbutton.js';
+import { setupColorButton, randomSceneLightColor, randomMaterialColor, setupHelpButton } from './colorbutton.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -30,7 +30,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.shadowMap.autoUpdate = false;
 
-const controls = new OrbitControls( camera, renderer.domElement );
+const controls = new OrbitControls( camera, document.body );
 if(!fullOrbitControl){
   controls.minPolarAngle = Math.PI * .1;
   controls.maxPolarAngle = Math.PI * .55;
@@ -62,13 +62,22 @@ loadingManager.onLoad = function(){
       <h1 id="heading">RaZ Garage</h1>
       <div class="card">
         <button id="colorButton" type="button"></button>
+        <button id="helpButton" type="button">HELP</button>
+        <div id="helpContainer">
+          <p>Hold Left Mouse Button and move Mouse or Swipe on Mobile to move camera around the scene.</p>
+          <p>Mouse scroll wheel or 2-Finger pinch to zooms in/out.</p>
+          <p>Click on individual lights or cars to change their color, or click CHANGE ALL LIGHTS button to change all lights to random colors</p>
+        </div>
       </div>
-
     </div>
   `
+  setupHelpButton(document.querySelector('#helpButton'));
   setupColorButton(document.querySelector('#colorButton'), lightMaterials, lights);
   animate();
   renderer.shadowMap.needsUpdate = true;
+  gsap.from(camera.position, {z: 45, duration: 1});
+  gsap.from("#heading", {opacity: 0, duration: 1});
+  gsap.from("#colorButton", {opacity: 0, duration: 1});
 };
 
 
@@ -137,7 +146,15 @@ const cortinaPaintMaterial = new THREE.MeshStandardMaterial({ name: "cortinaPain
 const metalBumperMaterial = new THREE.MeshStandardMaterial({ name: "metalBumperMaterial", color: 0xeeeeee, emissive: 0x000000, roughness: 0.1, metalness: .8, fog: true });
 let windowMaterial = new THREE.MeshPhongMaterial();
 
-const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x55555 });
+const floorTexture = textureLoader.load ("./textures/Asphalt009_2K_Color.jpg");
+const floorNormal = textureLoader.load ("./textures/Asphalt009_2K_Normal.jpg");
+floorTexture.wrapS = THREE.RepeatWrapping;
+floorTexture.wrapT = THREE.RepeatWrapping;
+floorTexture.repeat.set(4,4);
+floorNormal.wrapS = THREE.RepeatWrapping;
+floorNormal.wrapT = THREE.RepeatWrapping;
+floorNormal.repeat.set(4,4);
+const floorMaterial = new THREE.MeshPhongMaterial({  map: floorTexture, normalMap: floorNormal, shininess: 0, reflectivity: 0.1 });
 const wallTexture = textureLoader.load ("./textures/castle_brick_02_red_diff.jpg");
 const wallNormal = textureLoader.load ("./textures/castle_brick_02_red_nor.jpg");
 wallTexture.wrapS = THREE.RepeatWrapping;
@@ -146,8 +163,7 @@ wallTexture.repeat.set(4,4);
 wallNormal.wrapS = THREE.RepeatWrapping;
 wallNormal.wrapT = THREE.RepeatWrapping;
 wallNormal.repeat.set(4,4);
-const wallMaterial = new THREE.MeshPhongMaterial({ map: wallTexture, shininess: 0, reflectivity: 0.1});
-wallMaterial.normalMap = wallNormal;
+const wallMaterial = new THREE.MeshPhongMaterial({ map: wallTexture, normalMap: wallNormal, shininess: 0, reflectivity: 0.1 });
 
 const decalTexture = textureLoader.load ("./RaZLogo1.png");
 const decalMaterial = new THREE.MeshPhongMaterial( {
@@ -537,7 +553,7 @@ window.addEventListener('resize', () => {
 // window.addEventListener('ontouchstart', onMouseClick);
 window.addEventListener('mousemove', onMouseMove);
 
-
+gsap.from(".loadingHeading",{opacity: 0, duration: .5})
 
 // Main Loop
 function animate(){

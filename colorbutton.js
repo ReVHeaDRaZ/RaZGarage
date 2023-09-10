@@ -25,6 +25,21 @@ export function setupColorButton(element, lightMaterials = [], lights = []) {
   setColor();
 }
 
+export function setupHelpButton(element) {
+  const toggleHelp = () => {
+    let helpContainer = document.getElementById('helpContainer');
+    if(helpContainer.style.opacity==0){
+      element.style.opacity = .8;
+      helpContainer.style.opacity = 1;
+    }else{
+      element.style.opacity = .5;
+      helpContainer.style.opacity = 0;
+    }
+  }
+  
+  element.addEventListener('click', toggleHelp);
+}
+
 
 export function randomSceneLightColor(material, light){
   var r = Math.random() * 255;

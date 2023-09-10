@@ -26,6 +26,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: rgba(0,0,0,0.8);
+  overflow-x: hidden;
 }
 
 .progress-bar-container{
@@ -68,7 +69,12 @@ canvas {
   justify-content: center;
 }
 .appContainer{
-  text-align: center;
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
 }
 
 h1 {
@@ -78,6 +84,8 @@ h1 {
   line-height: 1.1;
   letter-spacing: .001em;
   opacity: .5;
+  align-self: flex-start;
+  user-select: none;
 }
 
 .loadingHeading{
@@ -89,12 +97,20 @@ h1 {
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  width: 160px;
   padding: .1em;
+  align-items: center;
+  pointer-events: none;
 }
 
 button {
   border-radius: 8px;
   border: 1px solid transparent;
+  width: 100%;
+  margin-right: 30px;
+  margin-bottom: 10px;
   padding: 0.4em .5em;
   font-size: 1em;
   font-weight: 500;
@@ -107,6 +123,7 @@ button {
   will-change: border-color filter;
   transition: border-color 0.25s;
   transition: filter 300ms;
+  pointer-events: fill;
 }
 button:hover {
   border-color: #ffffff;
@@ -115,6 +132,20 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+#helpContainer{
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  letter-spacing: .05rem;
+  font-size: 1em;
+  text-align: left;
+  user-select: none;
+  margin-right: 30px;
+  width: 100%;
+  padding: 5px;
+  color: white;
+  background-color: #7a7a7a86;
+  opacity: 0;
 }
 
 @media (prefers-color-scheme: light) {
@@ -129,3 +160,4 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
