@@ -1,5 +1,6 @@
 import './style.css';
-import { setupColorButton, randomSceneLightColor, randomMaterialColor, setupHelpButton } from './colorbutton.js';
+import { setupColorButton, randomSceneLightColor, randomMaterialColor, 
+  setupHelpButton, setupLightSphereToggleButton, setupResetCarColorsButton } from './colorbutton.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -15,6 +16,8 @@ let mouse = new THREE.Vector2();
 let lightMaterials = [];
 let lights = [];
 let leftLamp, rightLamp, rearLamp;
+let cortinaColor = new THREE.Color(0xFFFF00);
+let f100Color = new THREE.Color(0xFF0000);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x010101);
@@ -62,6 +65,8 @@ loadingManager.onLoad = function(){
       <h1 id="heading">RaZ Garage</h1>
       <div class="card">
         <button id="colorButton" type="button"></button>
+        <button id="lightSphereToggleButton" type="button">LIGHT SPHERE TOGGLE</button>
+        <button id="resetCarColorButton" type="button">RESET CAR COLORS</button>
         <button id="helpButton" type="button">HELP</button>
         <div id="helpContainer">
           <p>Hold Left Mouse Button and move Mouse or Swipe on Mobile to move camera around the scene.</p>
@@ -71,8 +76,10 @@ loadingManager.onLoad = function(){
       </div>
     </div>
   `
-  setupHelpButton(document.querySelector('#helpButton'));
   setupColorButton(document.querySelector('#colorButton'), lightMaterials, lights);
+  setupHelpButton(document.querySelector('#helpButton'));
+  setupLightSphereToggleButton(document.querySelector("#lightSphereToggleButton"), leftsphere, rightsphere);
+  setupResetCarColorsButton(document.querySelector('#resetCarColorButton'), cortinaPaintMaterial, cortinaColor, f100PaintMaterial, f100Color);
   animate();
   renderer.shadowMap.needsUpdate = true;
   gsap.from(camera.position, {z: 45, duration: 1});
@@ -96,15 +103,15 @@ pointLight3.position.set(-18,-5,20);
 const pointLight4 = new THREE.PointLight(0xffffff,150,0,2);
 pointLight4.position.set(18,-5,20);
 
-const rearpointLight = new THREE.PointLight(0xffffff,550,0,2);
+const rearpointLight = new THREE.PointLight(0xffffff,600,0,2);
 rearpointLight.position.set(0,15,-119);
 rearpointLight.castShadow = true;
 
-const farRightPointLight = new THREE.PointLight(0xffffff,300,0,2.1);
+const farRightPointLight = new THREE.PointLight(0xffffff,350,0,2.1);
 farRightPointLight.position.set(98,0,0);
 farRightPointLight.castShadow = true;
 
-const farLeftPointLight = new THREE.PointLight(0xffffff,300,0,2.1);
+const farLeftPointLight = new THREE.PointLight(0xffffff,350,0,2.1);
 farLeftPointLight.position.set(-98,0,0);
 farLeftPointLight.castShadow = true;
 
@@ -134,9 +141,6 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 // textureCube.wrapT = THREE.RepeatWrapping;;
 // textureCube.repeat.set(16,16);
 
-let cortinaColor = 0xFFFF00;
-let f100Color = 0xFF0000;
-
 const leftSphereMaterial = new THREE.MeshStandardMaterial({ name: "lightSphere", color: 0xffffff, emissive: 0x000000, roughness: 0.1, metalness: .9, fog: true });
 const rightSphereMaterial = new THREE.MeshStandardMaterial({ name: "lightSphere", color: 0xffffff, emissive: 0x000000, roughness: 0.1, metalness: .9, fog: true });
 
@@ -144,8 +148,10 @@ const lightGlowMaterial = new THREE.MeshStandardMaterial({ name: "lightGlow", co
 const f100PaintMaterial = new THREE.MeshStandardMaterial({ name: "f100Paint", color: f100Color, emissive: 0x000000, roughness: 0.1, metalness: .7, fog: true });
 const cortinaPaintMaterial = new THREE.MeshStandardMaterial({ name: "cortinaPaint", color: cortinaColor, emissive: 0x000000, roughness: 0.1, metalness: .7, fog: true });
 const metalBumperMaterial = new THREE.MeshStandardMaterial({ name: "metalBumperMaterial", color: 0xeeeeee, emissive: 0x000000, roughness: 0.1, metalness: .8, fog: true });
-let windowMaterial = new THREE.MeshPhongMaterial();
-
+let windowMaterial = new THREE.MeshPhongMaterial({ name: "windowMaterial", opacity: 0.863, reflectivity: 1, shininess: 100 });
+windowMaterial.color.r = 0.023;
+windowMaterial.color.g = 0.023;
+windowMaterial.color.b = 0.023;
 const floorTexture = textureLoader.load ("./textures/Asphalt009_2K_Color.jpg");
 const floorNormal = textureLoader.load ("./textures/Asphalt009_2K_Normal.jpg");
 floorTexture.wrapS = THREE.RepeatWrapping;
@@ -262,6 +268,7 @@ fbxLoader.load('./models/cortina/CortinaHIGHPOLY4threejs.fbx', (fbxScene) => {
   // windowMaterial.envMapIntensity = .05;
   cortina = fbxScene;
   scene.add(fbxScene);
+  console.log(cortina);
 });
 
 var f100;
@@ -284,22 +291,27 @@ fbxLoader.load('./models/F100HighPolyRigForGame.fbx', (fbxScene) => {
   fbxScene.children[0].material[3] = f100PaintMaterial;
   
   //Set darker tyres
-  let tyreBrightness = 0.001;
+  let tyreBrightness = 0.0005;
+  let tyreShine = 5;
   fbxScene.children[0].children[0].material[0].color.r = tyreBrightness;
   fbxScene.children[0].children[0].material[0].color.g = tyreBrightness;
   fbxScene.children[0].children[0].material[0].color.b = tyreBrightness;
+  fbxScene.children[0].children[0].material[0].shininess = tyreShine;
   fbxScene.children[0].children[0].material[1] = metalBumperMaterial;
   fbxScene.children[0].children[1].material[0].color.r = tyreBrightness;
   fbxScene.children[0].children[1].material[0].color.g = tyreBrightness;
   fbxScene.children[0].children[1].material[0].color.b = tyreBrightness;
+  fbxScene.children[0].children[1].material[0].shininess = tyreShine;
   fbxScene.children[0].children[1].material[1] = metalBumperMaterial;
   fbxScene.children[0].children[2].material[1].color.r = tyreBrightness;
   fbxScene.children[0].children[2].material[1].color.g = tyreBrightness;
   fbxScene.children[0].children[2].material[1].color.b = tyreBrightness;
+  fbxScene.children[0].children[2].material[1].shininess = tyreShine;
   fbxScene.children[0].children[2].material[0] = metalBumperMaterial;
   fbxScene.children[0].children[3].material[1].color.r = tyreBrightness;
   fbxScene.children[0].children[3].material[1].color.g = tyreBrightness;
   fbxScene.children[0].children[3].material[1].color.b = tyreBrightness;
+  fbxScene.children[0].children[3].material[1].shininess = tyreShine;
   fbxScene.children[0].children[3].material[0] = metalBumperMaterial;
 
   scene.add(fbxScene);

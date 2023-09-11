@@ -12,13 +12,6 @@ export function setupColorButton(element, lightMaterials = [], lights = []) {
     for(let i=0; i < lightMaterials.length; i++){
       randomSceneLightColor(lightMaterials[i], lights[i]);
     }
-    // leftobject.material.color.setRGB(r,g,b);
-    // leftobject.material.emissive.setRGB(r*.0015,g*.0015,b*.0015);
-    // rightobject.material.color.setRGB(r,g,b);
-    // rightobject.material.emissive.setRGB(r*.0015,g*.0015,b*.0015);
-    
-    // leftlight.color.setRGB(r*.01,g*.01,b*.01);
-    // rightlight.color.setRGB(r*.01,g*.01,b*.01);   
   }
   
   element.addEventListener('click', setColor);
@@ -29,10 +22,10 @@ export function setupHelpButton(element) {
   const toggleHelp = () => {
     let helpContainer = document.getElementById('helpContainer');
     if(helpContainer.style.opacity==0){
-      element.style.opacity = .8;
+      element.style.opacity = 0.8;
       helpContainer.style.opacity = 1;
     }else{
-      element.style.opacity = .5;
+      element.style.opacity = 0.5;
       helpContainer.style.opacity = 0;
     }
   }
@@ -40,6 +33,29 @@ export function setupHelpButton(element) {
   element.addEventListener('click', toggleHelp);
 }
 
+export function setupLightSphereToggleButton(element, leftsphere, rightsphere) {
+  const toggleLightSphere = () => {
+    if(leftsphere.visible == true){
+      leftsphere.visible = false;
+      rightsphere.visible = false;
+      element.style.opacity = 0.5;
+    }else{
+      leftsphere.visible = true;
+      rightsphere.visible = true;
+      element.style.opacity = 0.8;
+    }
+  }
+  element.style.opacity = .8;
+  element.addEventListener('click', toggleLightSphere);
+}
+
+export function setupResetCarColorsButton(element, cortinaMat, cortinaColor, f100Mat, f100Color) {
+  const resetCarColors = () => {
+    cortinaMat.color = cortinaColor.clone();
+    f100Mat.color = f100Color.clone();
+  }
+  element.addEventListener('click', resetCarColors);
+}
 
 export function randomSceneLightColor(material, light){
   var r = Math.random() * 255;
